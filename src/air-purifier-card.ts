@@ -235,7 +235,7 @@ export class AirPurifierCard extends LitElement {
 
   private _handleMoreInfo() {
     fireEvent(this, "hass-more-info", {
-      entityId: this.config.entity ?? null,
+      entityId: this.config.entity ?? undefined,
     });
   }
 
