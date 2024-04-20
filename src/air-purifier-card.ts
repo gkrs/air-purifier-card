@@ -7,8 +7,8 @@ import {
   PropertyValues,
   CSSResultGroup,
 } from 'lit';
-import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
+import { customElement, property, state } from "lit/decorators.js";
+import { classMap } from "lit/directives/class-map.js";
 import {
   HomeAssistant,
   hasConfigOrEntityChanged,
@@ -98,16 +98,20 @@ export class AirPurifierCard extends LitElement {
       return this._showError(localize('common.show_error'));
     }
 
-    const fanSpeed =
-      stateObj.attributes.fan_speed !== null &&
-      stateObj.attributes.fan_speed;
-
-    const ledEnable = stateObj.attributes.led_enable;
-    const childLock = stateObj.attributes.child_lock === 'LOCK';
-    const filterCheck = stateObj.attributes.replace_filter;
-    const mode = stateObj.attributes.fan_mode;
-    const pm25 = stateObj.attributes.pm25 != -1 ? stateObj.attributes.pm25 : '-';
-    const airQuality = stateObj.attributes.air_quality;
+    // Assume that related entities have the same entity_id base
+    const fanSpeedEntity = this.config.entity?.replace('fan', 'sensor') + '_fan_speed';
+    const fanSpeed = this.hass.states[fanSpeedEntity]?.state !== null ? Number(this.hass.states[fanSpeedEntity]?.state) : -1;
+    const ledEnableEntity = this.config.entity?.replace('fan', 'switch') + '_led_enable';
+    const ledEnable = this.hass.states[ledEnableEntity].state === 'on';
+    const childLockEntity = this.config.entity?.replace('fan', 'switch') + '_child_lock';
+    const childLock = this.hass.states[childLockEntity].state === 'on';
+    const replaceFilterEntity = this.config.entity?.replace('fan', 'binary_sensor') + '_replace_filter';
+    const replaceFilter = this.hass.states[replaceFilterEntity].state === 'on';
+    const mode = this.hass.states[this.config.entity].attributes.preset_mode;
+    const pm25Entity = this.config.entity?.replace('fan', 'sensor') + '_pm25';
+    const pm25 = this.hass.states[pm25Entity].state !== '-1' ? this.hass.states[pm25Entity].state : '-';
+    const airQualityEntity = this.config.entity?.replace('fan', 'sensor') + '_air_quality';
+    const airQuality = this.hass.states[airQualityEntity].state;
     console.info(`Mode: ${mode}`);
     return html`
 
@@ -173,9 +177,9 @@ export class AirPurifierCard extends LitElement {
                 .path=${ledEnable ? mdiLightbulbOnOutline : mdiLightbulbOutline}>
               </ha-icon-button>
               <ha-icon-button
-                class=${classMap({ "selected-icon": filterCheck, 'filterCheck': true })}
+                class=${classMap({ "selected-icon": replaceFilter, 'replaceFilter': true })}
                 tabindex="0"
-                .label=${'Check filter'}
+                .label=${'Replace filter'}
                 .path=${mdiAirFilter}>
               </ha-icon-button>
             </div>
@@ -291,7 +295,7 @@ export class AirPurifierCard extends LitElement {
       .auto {
         --mode-color: #008000;
       }
-      .filterCheck {
+      .replaceFilter {
         --mode-color: var(--error-color);
       }
 
