@@ -140,15 +140,27 @@ export class AirPurifierCard extends LitElement {
                   class=${classMap({ 'capitalize': !this.config.show_quality_value })}>
                     ${this.config.show_quality_value ? `${pm25} µg/m³` : airQuality}
                 </div>
-                <ha-icon-button
-                  class=${classMap({
-                    'power-button': true,
-                    'state-on': stateObj.state === 'on'
-                  })}
-                  tabindex="0"
-                  @click=${this._togglePower}
-                  .path=${mdiWeatherWindy}>
-                </ha-icon-button>
+                ${this.config.icon ?
+                  html`
+                  <ha-icon
+                    class=${classMap({
+                      'power-button': true,
+                      'state-on': stateObj.state === 'on'
+                    })}
+                    @click=${this._togglePower}
+                    .icon=${this.config.icon}>
+                  </ha-icon>`:
+                  html`
+                  <ha-icon-button
+                    class=${classMap({
+                      'power-button': true,
+                      'state-on': stateObj.state === 'on'
+                    })}
+                    tabindex="0"
+                    @click=${this._togglePower}
+                    .path=${mdiWeatherWindy}>
+                  </ha-icon-button>`
+                }
                 <div id="modes">
                   <ha-icon-button
                     class=${classMap({ "selected-icon": mode === 'auto', 'auto': true })}

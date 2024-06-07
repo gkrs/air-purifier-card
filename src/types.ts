@@ -16,4 +16,5 @@ export interface AirPurifierCardConfig extends LovelaceCardConfig {
   test_gui?: boolean;
   entity?: string;
   show_quality_value?: boolean;
+  icon?: string;
 }

@@ -54,6 +54,10 @@ export class AirPurifierCardEditor extends LitElement implements LovelaceCardEdi
     return this._config?.show_quality_value || false;
   }
 
+  get _icon(): string {
+    return this._config?.icon || '';
+  }
+
   protected render(): TemplateResult | void {
     if (!this.hass || !this._helpers) {
       return html``;
@@ -110,13 +114,23 @@ export class AirPurifierCardEditor extends LitElement implements LovelaceCardEdi
                   @value-changed=${this._valueChanged}
                 ></paper-input>
                 <br />
-                <ha-formfield .label=${`Show qir quality ${this._show_quality_value ?  'PM2.5 value' : 'description'}`}>
+                <ha-formfield .label=${`Show air quality ${this._show_quality_value ? 'PM2.5 value' : 'description'}`}>
                   <ha-switch
                     .checked=${this._show_quality_value !== false}
                     .configValue=${'show_quality_value'}
                     @change=${this._valueChanged}
                   ></ha-switch>
                 </ha-formfield>
+                <br />
+                <ha-icon-picker
+                  .hass=${this.hass}
+                  .value=${this._icon}
+                  .configValue=${'icon'}
+                  @value-changed=${this._valueChanged}
+                  .label=${this.hass!.localize(
+                    "ui.dialogs.helper_settings.generic.icon"
+                  )}
+                ></ha-icon-picker>
               </div>
             `
           : ''}
